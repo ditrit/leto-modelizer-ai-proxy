@@ -9,3 +9,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
  - Setup the project
+ - Create Ollama handler in order to generate code through the /api/diagram route
+ 
