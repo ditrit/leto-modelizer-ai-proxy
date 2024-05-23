@@ -1,0 +1,12 @@
+{
+    "pluginPreferences":{
+        "default": "ollama"
+    },
+    "ollama":
+    {
+        "base_url": "http://localhost:11434/api",
+        "models": ["mistral"],
+        "defaultModel": "mistral"
+    }
+}
+
