@@ -18,6 +18,36 @@ This file describes how to contribute and develop for this open-source project.
 
     To deactivate your virtual environment: ``` deactivate ```
 
+## How to launch
+
+### Local launch
+
+In order to launch the API locally, you need to activate your virtual environment using pipenv.
+
+Then, you just need to launch the following command from the root folder:
+
+```shell
+uvicorn src.main:app --reload
+```
+
+## Docker
+
+You need to run the following commands to launch the API.
+
+First build the docker image using the following command:
+
+```sh
+docker build -t leto-modelizer-ia-api .
+```
+
+Then run the image:
+
+```sh
+docker run -p 8000:8000 --net=host leto-modelizer-ia-api
+```
+
+Once your docker is running, you can request it on this url: ```http://localhost:8000/```
+
 ## Checkstyle
 
 Before pushing your branch and open/synchronize a pull-request, you have to verify the checkstyle of your application. Here is the command to do so (on the root folder):
@@ -36,7 +66,7 @@ pipenv check
 
 ## How to launch unit tests
 
-In order to launch the tests, you must be in the DataCollector root folder and from it, you have to launch the following command:
+In order to launch the tests, you must be in the root folder and from it, you have to launch the following command:
 ```sh
 pytest
 ```
@@ -51,6 +81,69 @@ To launch it with the coverage and generate an HTML report:
 pytest --cov=. --cov-report term-missing --cov-report html
 firefox htmlcov/index.html
 ```
+
+## How to add a new AI
+
+In order to handle a new AI, you need to add it to:
+- Create a new handler in `handlers` folder and in the new handler class should inherit from `BaseHandler`.
+  - Currently you need to implement the `generate` method.
+- Add the new handler in the factory `handlers/Factory.py`.
+- Add a section in `configuration/configurationManager.py` with the name of the new AI and its settings.
+
+### Example of Handler
+
+```python
+from src.handlers.BaseHandler import BaseHandler
+
+class MyAIHandler(BaseHandler):
+    def generate(self, question: str) -> str:
+        ...
+```
+
+### Example of updating the factory
+
+Once you have your handler, you need to add it in the factory.
+
+```python
+from src.configuration.configurationManager import ConfigurationManager
+from src.handlers.OllamaHandler import OllamaHandler
+
+
+class Factory:
+    @staticmethod
+    def get_handler(plugin_name: str):
+       ## previous code for other handlers
+
+       if plugin_name == "MyAI":
+           return MyAIHandler()
+```
+
+### Example of configuration
+
+Finally, you need to add the new AI in the `configuration.json` file.
+
+```json
+{
+    "pluginPreferences":{
+        "default": "ollama"
+    },
+    "ollama":
+    {
+        "base_url": "http://localhost:11434/api",
+        "models": ["mistral"],
+        "defaultModel": "mistral"
+    },
+    "MyAI": {
+        "base_url": "http://localhost:8080/api",
+        "otherSetting": "value"
+    }
+}
+```
+
+
+## How to launch e2e tests with Behave
+
+Once you have your API started and running, either locally or using docker, you can just use the command `behave` (from the root folder).
 
 ## How to release
 
