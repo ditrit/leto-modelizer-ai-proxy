@@ -1,11 +1,12 @@
-# leto-modelizer-ia-api
+# leto-modelizer-ai-proxy
 
 ## Description
-Leto-Modelizer API is a Python-based API designed to generate infrastructure code using different AI (Artificial Intelligence) models. The purpose of this API is to facilitate the automation and customization of infrastructure code generation for various use cases.
+Leto-Modelizer AI Proxy is a Python-based proxy API which interfaces with several AI models in order to generate infrastructure code for Leto-Modelizer.
+The purpose of this API is to facilitate the automation and customization of infrastructure code generation for various use cases.
 
 Linked to Leto-Modelizer, the API provides a seamless integration with the powerful infrastructure generation capabilities of the Leto-Modelizer framework. Whether you need to generate code for cloud infrastructure, or any other domain-specific infrastructure, our API leverages the advanced modeling capabilities of Leto-Modelizer to automate and optimize the code generation process.
 
-Built on top of Python's robust web framework, the Leto-Modelizer API offers a flexible and extensible architecture for integrating various AI models. Whether you prefer using pre-trained models or training your own custom models, our API seamlessly handles the code generation process. By leveraging the power of AI and Leto-Modelizer, our API simplifies the task of infrastructure code generation, saving you time.
+Built on top of Python's robust web framework, the Leto-Modelizer Proxy API offers a flexible and extensible architecture for integrating various AI models. Whether you prefer using pre-trained models or training your own custom models, our API seamlessly handles the code generation process. By leveraging the power of AI and Leto-Modelizer, our API simplifies the task of infrastructure code generation, saving you time.
 
 
 ## Setup
@@ -68,13 +69,13 @@ You need to run the following commands to launch the API.
 First build the docker image using the following command:
 
 ```sh
-docker build -t leto-modelizer-ia-api .
+docker build -t leto-modelizer-ai-proxy .
 ```
 
 Then run the image:
 
 ```sh
-docker run -p 8000:8000 --net=host leto-modelizer-ia-api
+docker run -p 8000:8000 --net=host leto-modelizer-ai-proxy
 ```
 
 Once your docker is running, you can request it on this url: ```http://localhost:8000/```

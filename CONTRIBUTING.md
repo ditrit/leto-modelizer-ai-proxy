@@ -1,4 +1,4 @@
-# leto-modelizer-ia-api
+# leto-modelizer-ai-proxy
 
 ## Description
 
@@ -37,13 +37,13 @@ You need to run the following commands to launch the API.
 First build the docker image using the following command:
 
 ```sh
-docker build -t leto-modelizer-ia-api .
+docker build -t leto-modelizer-ai-proxy .
 ```
 
 Then run the image:
 
 ```sh
-docker run -p 8000:8000 --net=host leto-modelizer-ia-api
+docker run -p 8000:8000 --net=host leto-modelizer-ai-proxy
 ```
 
 Once your docker is running, you can request it on this url: ```http://localhost:8000/```
