@@ -96,8 +96,11 @@ In order to handle a new AI, you need to add it to:
 from src.handlers.BaseHandler import BaseHandler
 
 class MyAIHandler(BaseHandler):
+
+    def initialize(self):
+        pass
     def generate(self, question: str) -> str:
-        ...
+        pass
 ```
 
 ### Example of updating the factory
@@ -127,19 +130,28 @@ Finally, you need to add the new AI in the `configuration.json` file.
     "pluginPreferences":{
         "default": "ollama"
     },
-    "ollama":
-    {
-        "base_url": "http://localhost:11434/api",
-        "models": ["mistral"],
-        "defaultModel": "mistral"
-    },
-    "MyAI": {
-        "base_url": "http://localhost:8080/api",
-        "otherSetting": "value"
+    "ai-models":{
+        "ollama":
+        {
+            "base_url": "http://localhost:11434/api",
+            "models": ["mistral"],
+            "defaultModel": "mistral",
+            "modelFiles": ["default-mistral-modelfile"]
+        },
+        "MyAI": {
+            "base_url": "http://localhost:8080/api",
+            "otherSetting": "value"
+        }    
     }
 }
 ```
 
+### Adding a new Ollama model file
+
+First add your modelfile in the `src/handlers/Ollama/ModelFiles` folder.
+You can find how to create your model file [here](https://github.com/ollama/ollama/blob/main/docs/modelfile.md)
+
+Then add your model file in the `configuration.json` file, in the `ai-models.ollama.modelFiles` section.
 
 ## How to launch e2e tests with Behave
 
