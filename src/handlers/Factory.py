@@ -1,5 +1,5 @@
 from src.configuration.configurationManager import ConfigurationManager
-from src.handlers.OllamaHandler import OllamaHandler
+from src.handlers.Ollama.OllamaHandler import OllamaHandler
 
 
 class Factory:
@@ -26,3 +26,14 @@ class Factory:
 
         if plugin_name == "ollama":
             return OllamaHandler()
+
+    @staticmethod
+    def initialize_models():
+        """
+        Initializes all the models defined in the configuration file.
+        """
+        configuration = ConfigurationManager().get_configuration()
+
+        for models in configuration["ai-models"]:
+            handler = Factory.get_handler(models)
+            handler.initialize()
