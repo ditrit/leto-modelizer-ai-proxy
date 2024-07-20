@@ -26,7 +26,7 @@ class TestConfigurationManager(TestCase):
         mock_file.read.return_value = json.dumps(
             {
                 "pluginPreferences": {"default": "fakeAI"},
-                "ollama": {"url": "http://localhost"},
+                "ai-models": {"ollama": {"url": "http://localhost"}},
             }
         )
 
@@ -46,7 +46,7 @@ class TestConfigurationManager(TestCase):
         mock_file.read.return_value = json.dumps(
             {
                 "pluginPreferences": {"somePlugin": "ollama"},
-                "ollama": {"url": "http://localhost"},
+                "ai-models": {"ollama": {"url": "http://localhost"}},
             }
         )
 
@@ -66,7 +66,7 @@ class TestConfigurationManager(TestCase):
         expected_config = json.dumps(
             {
                 "pluginPreferences": {"default": "ollama"},
-                "ollama": {"url": "http://localhost"},
+                "ai-models": {"ollama": {"url": "http://localhost"}},
             }
         )
 
