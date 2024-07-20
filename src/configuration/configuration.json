@@ -2,11 +2,13 @@
     "pluginPreferences":{
         "default": "ollama"
     },
-    "ollama":
-    {
-        "base_url": "http://localhost:11434/api",
-        "models": ["mistral"],
-        "defaultModel": "mistral"
+    "ai-models":{
+        "ollama": {
+            "base_url": "http://localhost:11434/api",
+            "models": ["mistral"],
+            "defaultModel": "mistral",
+            "modelFiles": ["default-mistral-modelfile"]
+        }
     }
 }
 

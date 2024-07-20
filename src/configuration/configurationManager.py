@@ -61,7 +61,7 @@ class ConfigurationManager:
         if not "default" in configuration["pluginPreferences"]:
             raise ValueError("Invalid plugin preferences: 'default' not found")
         for _, ai_to_use in configuration["pluginPreferences"].items():
-            if ai_to_use not in configuration:
+            if ai_to_use not in configuration["ai-models"]:
                 raise ValueError(f"Invalid AI: { ai_to_use }")
         return configuration
 
