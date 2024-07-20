@@ -9,11 +9,24 @@ class BaseHandler(ABC):
     Base class for all handler classes.
     """
 
-    def __init__(self):
+    def __init__(self, ai_name: str):
         """
         Initializes the BaseHandler by setting the `configuration` from the user configuration.
+
+        Parameters:
+            ai_name (str): The name of the AI model to use for the handler.
         """
-        self.configuration = ConfigurationManager().get_configuration()
+        self.ai_name = ai_name
+        self.configuration = ConfigurationManager().get_configuration()["ai-models"][
+            ai_name
+        ]
+
+    @abstractmethod
+    def initialize(self):
+        """
+        This method is used to initialize everything the handler needs in order to work.
+        """
+        pass
 
     @abstractmethod
     def generate(self, diagram: Diagram):
