@@ -21,7 +21,7 @@ def request_full(context, endpoint: str, method: str, body: dict, content_type: 
     if endpoint == "/":
         endpoint = ""
     endpoint = replace_values_in_string(context, endpoint)
-    context.url = os.path.join("http://localhost:8000", endpoint)
+    context.url = os.path.join("http://localhost:8585", endpoint)
 
     header = {}
     if content_type:
