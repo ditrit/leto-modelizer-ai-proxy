@@ -57,10 +57,10 @@ First install pipenv and create a virtual environment with the needed packages:
 Then launch the API using uvicorn (from the root folder):
 
 ```sh
-uvicorn src.main:app --reload
+uvicorn src.main:app --reload --port 8585
 ```
 
-Once it is running, you can request it on this url: ```http://localhost:8000/```
+Once it is running, you can request it on this url: ```http://localhost:8585/```
 
 ## How to launch the API using docker
 
@@ -75,10 +75,10 @@ docker build -t leto-modelizer-ai-proxy .
 Then run the image:
 
 ```sh
-docker run -p 8000:8000 --net=host leto-modelizer-ai-proxy
+docker run -p 8585:8585 --net=host leto-modelizer-ai-proxy
 ```
 
-Once your docker is running, you can request it on this url: ```http://localhost:8000/```
+Once your docker is running, you can request it on this url: ```http://localhost:8585/```
 
 ## Configuration
 
