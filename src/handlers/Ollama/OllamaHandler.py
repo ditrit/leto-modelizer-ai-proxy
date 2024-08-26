@@ -3,6 +3,9 @@ import requests
 import json
 import re
 
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+
 from src.models.Diagram import Diagram
 from src.handlers.BaseHandler import BaseHandler
 
@@ -29,10 +32,10 @@ class OllamaHandler(BaseHandler):
 
         reponses = []
         if "modelFiles" in self.configuration:
-            for model_file in self.configuration["modelFiles"]:
-                print(f"Loading Ollama model file: {model_file}")
+            for model_file_name, model_file in self.configuration["modelFiles"].items():
+                print(f"Loading Ollama model file for {model_file_name}: {model_file}")
                 body = {
-                    "name": model_file,
+                    "name": model_file_name,
                     "path": os.path.join(
                         os.path.dirname(os.path.abspath(__file__)),
                         "ModelFiles",
@@ -61,15 +64,16 @@ class OllamaHandler(BaseHandler):
             str: The extracted JSON data if successfully parsed, otherwise None.
         """
         json_match = re.search(
-            r"```json\s*([^`]+)```",  # NOSONAR: Sonar do not want the + in the regexp, but it is required
+            r"```(?:\w+)?\s*([\s\S]+?)```",  # NOSONAR: Sonar do not want the + in the regexp, but it is required
             response_text,
             re.DOTALL,
         )
+        print(f"response_text: {response_text}")
         if json_match:
             json_data = json_match.group(1)
             try:
-                json.loads(json_data)
-                return json_data
+                print(f"json_data: {json_data}")
+                return json.loads(json_data)
             except json.JSONDecodeError:
                 return None
         else:
@@ -89,16 +93,21 @@ class OllamaHandler(BaseHandler):
             KeyError: If the configuration file does not contain the required keys.
             requests.exceptions.RequestException: If there is an error while making the API request.
         """
+
         if "modelFiles" not in self.configuration:
             model = self.configuration["defaultModel"]
+        elif diagram.plugin_name in self.configuration["modelFiles"]:
+            model = diagram.plugin_name
         else:
-            model = self.configuration["modelFiles"][0]
-        print(f"Generating code with Ollama model: {model}")
+            model = "default"
+
         body = {
             "model": model,
             "prompt": diagram.description,
             "stream": False,
         }
+
+        print(f"Generating code with Ollama: {body}")
 
         response = requests.post(
             f"{self.configuration['base_url']}/generate",
@@ -106,8 +115,9 @@ class OllamaHandler(BaseHandler):
         )
 
         json_code = self.__parse_response(response.json()["response"])
-
-        if json_code is None:
-            return response.json()["response"]
+        if json_code is not None:
+            return JSONResponse(content=json_code)
         else:
-            return json_code
+            raise HTTPException(
+                status_code=530, detail="Invalid response from Ollama API"
+            )
