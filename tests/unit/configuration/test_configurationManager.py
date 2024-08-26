@@ -7,7 +7,7 @@ from src.configuration.configurationManager import ConfigurationManager
 
 class TestConfigurationManager(TestCase):
 
-    def setUp(self) -> None:
+    def tearDown(self) -> None:
         ConfigurationManager().reset()
 
     def test_configuration_singleton(self):
@@ -46,7 +46,7 @@ class TestConfigurationManager(TestCase):
         mock_file.read.return_value = json.dumps(
             {
                 "pluginPreferences": {"somePlugin": "ollama"},
-                "ai-models": {"ollama": {"url": "http://localhost"}},
+                "ai-models": {"ollama": {"base_url": "http://localhost"}},
             }
         )
 
@@ -57,18 +57,29 @@ class TestConfigurationManager(TestCase):
 
     @patch("os.environ.get")
     @patch("builtins.open")
-    def testsd_configuration_success(self, mock_open, mock_environ_get):
+    def test_configuration_success(self, mock_open, mock_environ_get):
         # Mock the return value of os.environ.get
         mock_environ_get.return_value = "path/to/config.json"
 
         # Mock the return value of open
         mock_file = mock_open.return_value.__enter__.return_value
-        expected_config = json.dumps(
-            {
-                "pluginPreferences": {"default": "ollama"},
-                "ai-models": {"ollama": {"url": "http://localhost"}},
-            }
-        )
+        mocked_config = {
+            "pluginPreferences": {"default": "ollama"},
+            "ai-models": {
+                "ollama": {
+                    "base_url": "http://localhost",
+                    "models": ["mistral"],
+                    "defaultModel": "mistral",
+                    "modelFiles": {
+                        "default": "default-mistral-modelfile",
+                        "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
+                        "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile",
+                    },
+                }
+            },
+        }
+
+        expected_config = json.dumps(mocked_config)
 
         mock_file.read.return_value = expected_config
 

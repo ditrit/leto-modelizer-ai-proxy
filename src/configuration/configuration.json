@@ -4,10 +4,14 @@
     },
     "ai-models":{
         "ollama": {
-            "base_url": "http://localhost:11434/api",
+            "base_url": "http://127.0.0.1:11434/api",
             "models": ["mistral"],
             "defaultModel": "mistral",
-            "modelFiles": ["default-mistral-modelfile"]
+            "modelFiles": {
+                "default": "default-mistral-modelfile",
+                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
+                "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile"
+            }
         }
     }
 }

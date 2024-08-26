@@ -9,6 +9,7 @@ class ConfigurationManager:
 
     _instance = None
     _reset = False
+    _config = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -43,6 +44,7 @@ class ConfigurationManager:
             cls (type): The class object.
         """
         cls._instance = None
+        cls._config = None
         cls._reset = True
 
     def __validate_configuration(self, configuration):
@@ -81,7 +83,7 @@ class ConfigurationManager:
             FileNotFoundError: If the configuration file specified by `API_CONFIGURATION` does not exist.
             JSONDecodeError: If the configuration file contains invalid JSON syntax.
         """
-        if not hasattr(self, "_config"):
+        if not self._config:
             config_file_path = os.environ.get(
                 "API_CONFIGURATION", "src/configuration/configuration.json"
             )
