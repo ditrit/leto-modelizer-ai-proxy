@@ -26,8 +26,8 @@ class TestOllamaHandler(TestCase):
                         "defaultModel": "mistral",
                         "modelFiles": {
                             "default": "default-mistral-modelfile",
-                            "kubernator-plugin": "default-kubernetes-mistral-modelfile",
-                            "githubator-plugin": "default-githubactions-mistral-modelfile",
+                            "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
+                            "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile",
                         },
                     }
                 },

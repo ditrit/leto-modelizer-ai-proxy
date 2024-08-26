@@ -68,11 +68,9 @@ class OllamaHandler(BaseHandler):
             response_text,
             re.DOTALL,
         )
-        print(f"response_text: {response_text}")
         if json_match:
             json_data = json_match.group(1)
             try:
-                print(f"json_data: {json_data}")
                 return json.loads(json_data)
             except json.JSONDecodeError:
                 return None
@@ -106,8 +104,6 @@ class OllamaHandler(BaseHandler):
             "prompt": diagram.description,
             "stream": False,
         }
-
-        print(f"Generating code with Ollama: {body}")
 
         response = requests.post(
             f"{self.configuration['base_url']}/generate",
