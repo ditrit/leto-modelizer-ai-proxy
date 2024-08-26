@@ -43,10 +43,10 @@ docker build -t leto-modelizer-ai-proxy .
 Then run the image:
 
 ```sh
-docker run -p 8000:8000 --net=host leto-modelizer-ai-proxy
+docker run -p 8585:8585 --net=host leto-modelizer-ai-proxy
 ```
 
-Once your docker is running, you can request it on this url: ```http://localhost:8000/```
+Once your docker is running, you can request it on this url: ```http://localhost:8585/```
 
 ## Checkstyle
 
@@ -136,7 +136,10 @@ Finally, you need to add the new AI in the `configuration.json` file.
             "base_url": "http://localhost:11434/api",
             "models": ["mistral"],
             "defaultModel": "mistral",
-            "modelFiles": ["default-mistral-modelfile"]
+            "modelFiles": {
+                "default": "default-mistral-modelfile",
+                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
+            }
         },
         "MyAI": {
             "base_url": "http://localhost:8080/api",
