@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("")
 def generate(diagram: Diagram):
     """
     Generates code based on the provided `diagram` object.
