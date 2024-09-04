@@ -57,10 +57,12 @@ First install pipenv and create a virtual environment with the needed packages:
 Then launch the API using uvicorn (from the root folder):
 
 ```sh
-uvicorn src.main:app --reload --port 8585
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8585
 ```
 
-Once it is running, you can request it on this url: ```http://localhost:8585/```
+Once it is running, you can request it on this url: `http://localhost:8585/`.
+
+And API documentation is `http://localhost:8585/docs`.
 
 ## How to launch the API using docker
 
