@@ -11,4 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Setup the project
  - Create Ollama handler in order to generate code through the /api/diagram route
  - Handle Modelfiles for Ollama
+ - Migrate to python 3.12
+ - Migrate from uvicorn to hypercorn
  
