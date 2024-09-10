@@ -6,6 +6,7 @@ import re
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 
+from src.models.Message import Message
 from src.models.Diagram import Diagram
 from src.handlers.BaseHandler import BaseHandler
 
@@ -32,24 +33,30 @@ class OllamaHandler(BaseHandler):
 
         reponses = []
         if "modelFiles" in self.configuration:
-            for model_file_name, model_file in self.configuration["modelFiles"].items():
-                print(f"Loading Ollama model file for {model_file_name}: {model_file}")
-                body = {
-                    "name": model_file_name,
-                    "path": os.path.join(
-                        os.path.dirname(os.path.abspath(__file__)),
-                        "ModelFiles",
-                        model_file,
-                    ),
-                    "stream": False,
-                }
+            for model_file_category, model_files in self.configuration[
+                "modelFiles"
+            ].items():
+                for plugin_name, model_file in model_files.items():
+                    print(
+                        f"Loading Ollama model file for {plugin_name}: {model_file_category}/{model_file} ({model_file_category})"
+                    )
+                    body = {
+                        "name": model_file,
+                        "path": os.path.join(
+                            os.path.dirname(os.path.abspath(__file__)),
+                            "ModelFiles",
+                            model_file_category,
+                            model_file,
+                        ),
+                        "stream": False,
+                    }
 
-                response = requests.post(
-                    f"{self.configuration['base_url']}/create",
-                    json=body,
-                )
+                    response = requests.post(
+                        f"{self.configuration['base_url']}/create",
+                        json=body,
+                    )
 
-                reponses.append(response.json())
+                    reponses.append(response.json())
 
         return reponses
 
@@ -94,10 +101,10 @@ class OllamaHandler(BaseHandler):
 
         if "modelFiles" not in self.configuration:
             model = self.configuration["defaultModel"]
-        elif diagram.plugin_name in self.configuration["modelFiles"]:
-            model = diagram.plugin_name
+        elif diagram.plugin_name in self.configuration["modelFiles"]["generate"]:
+            model = self.configuration["modelFiles"]["generate"][diagram.plugin_name]
         else:
-            model = "default"
+            model = self.configuration["modelFiles"]["generate"]["default"]
 
         body = {
             "model": model,
@@ -117,3 +124,57 @@ class OllamaHandler(BaseHandler):
             raise HTTPException(
                 status_code=530, detail="Invalid response from Ollama API"
             )
+
+    def send_message(self, message: Message):
+
+        if "modelFiles" not in self.configuration:
+            model = self.configuration["defaultModel"]
+        elif message.plugin_name in self.configuration["modelFiles"]["message"]:
+            model = self.configuration["modelFiles"]["message"][message.plugin_name]
+        else:
+            model = self.configuration["modelFiles"]["message"]["default"]
+
+        # If there are files, add them to the prompt in order to
+        # provide more context to the model
+        if message.files is not None:
+            body = {
+                "model": model,
+                "prompt": "I'm going to ask you questions about the following files (you can forget all previous files):",
+                "stream": False,
+            }
+
+            for file in message.files:
+                body["prompt"] = f"{body['prompt']}\n {file.path}: {file.content}"
+
+            if message.context is not None:
+                body["context"] = message.context
+
+            response = requests.post(
+                f"{self.configuration['base_url']}/generate",
+                json=body,
+            )
+
+            message.context = str(response.json()["context"])
+
+            # If no message was provided, return only the context
+            if message.message is None:
+                response_context = {"context": message.context}
+                return JSONResponse(content=response_context)
+
+        body = {
+            "model": model,
+            "prompt": message.message,
+            "stream": False,
+        }
+
+        if message.context is not None:
+            body["context"] = json.loads(message.context)
+
+        response = requests.post(
+            f"{self.configuration['base_url']}/generate",
+            json=body,
+        )
+
+        json_code = {"message": response.json()["response"]}
+        json_code["context"] = str(response.json()["context"])
+        return JSONResponse(content=json_code)
