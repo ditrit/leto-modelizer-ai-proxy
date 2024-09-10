@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
-from src.routers import diagram
+from src.routers import diagram, message
 from src.handlers.Factory import Factory
 
 app = FastAPI()
@@ -9,6 +9,7 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 api_router.include_router(diagram.router)
+api_router.include_router(message.router)
 
 app.include_router(api_router)
 
