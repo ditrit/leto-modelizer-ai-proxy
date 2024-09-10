@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.configuration.configurationManager import ConfigurationManager
 from src.models.Diagram import Diagram
+from src.models.Message import Message
 
 
 class BaseHandler(ABC):
@@ -35,5 +36,16 @@ class BaseHandler(ABC):
 
         Parameters:
             diagram (Diagram): The diagram object containing the description of the diagram to generate.
+        """
+        pass
+
+    @abstractmethod
+    def send_message(self, message: Message):
+        """
+        Sends a message to the AI.
+        The message is a message in a conversation.
+
+        Parameters:
+            message (Message): The message object containing the message to send to the AI.
         """
         pass
