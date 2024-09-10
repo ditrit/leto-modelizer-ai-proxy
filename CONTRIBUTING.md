@@ -8,7 +8,10 @@ This file describes how to contribute and develop for this open-source project.
 
 * pipenv
 
-    Install pipenv:  ``` pip install pipenv ```
+    On modern Linux distributions, you can install pipenv using the following command:
+        * ``` sudo apt install pipenv ```
+        * ``` sudo apt install pipx && pipx install pipenv && pipx ensurepath ```
+    **NOTE**: After PEP668, all python packages should be installed in a virtual environment (recommanded to use pipx) or using the debian package manager.
 
     Create virtual environment and install dependencies from your repo: ``` pipenv install ```
 
@@ -27,7 +30,7 @@ In order to launch the API locally, you need to activate your virtual environmen
 Then, you just need to launch the following command from the root folder:
 
 ```shell
-uvicorn src.main:app --reload
+hypercorn src.main:app --reload --bind 127.0.0.1:8585
 ```
 
 ## Docker
@@ -94,13 +97,16 @@ In order to handle a new AI, you need to add it to:
 
 ```python
 from src.handlers.BaseHandler import BaseHandler
+from src.models.Diagram import Diagram
+from src.models.Message import Message
 
 class MyAIHandler(BaseHandler):
 
     def initialize(self):
         pass
-    def generate(self, question: str) -> str:
+    def generate(self, diagram: Diagram) -> str:
         pass
+    def message(self, message: Message) -> str:
 ```
 
 ### Example of updating the factory
@@ -137,8 +143,16 @@ Finally, you need to add the new AI in the `configuration.json` file.
             "models": ["mistral"],
             "defaultModel": "mistral",
             "modelFiles": {
-                "default": "default-mistral-modelfile",
-                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
+                "generate": {
+                    "default": "default-mistral-modelfile_generate",
+                    "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
+                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate"
+                },
+                "message": {
+                    "default": "default-mistral-modelfile_message",
+                    "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
+                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message"
+                }
             }
         },
         "MyAI": {

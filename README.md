@@ -65,6 +65,8 @@ hypercorn src.main:app --reload --bind 127.0.0.1:8585
 
 Once it is running, you can request it on this url: ```http://localhost:8585/```
 
+And the Swagger UI is available on this url: ```http://localhost:8585/docs```
+
 ## How to launch the API using docker
 
 You need to run the following commands to launch the API.
@@ -138,8 +140,8 @@ Moreover, you can add your own AI models, to do so see [here](CONTRIBUTING.md#ho
 
 Currently the API only supports these enpoints:
 
-|  Method | Enpoint       | Description                       |
-|---------|---------------|-----------------------------------|
-| GET     | /             | Returning a welcome message       |
-| POST    | /api/diagram/ | Generating diagram code           |
-
+|  Method | Enpoint       | Description                                                             |
+|---------|---------------|-------------------------------------------------------------------------|
+| GET     | /             | Returning a welcome message                                             |
+| POST    | /api/diagram  | Generating diagram code                                                 |
+| POST    | /api/message  | Send a message to the AI and get a response with the associated context |
