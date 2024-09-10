@@ -54,3 +54,16 @@ def step_then_check_status_code(context, field, content):
     value = replace_values_in_string(context, content)
 
     assert check_value(context.response.json(), field, value, "string")
+
+
+@then('I save the field "{field}" of the response in the context')
+def step_save_field_in_context(context, field):
+    json_data = context.response.json()
+    keys = field.split(".")
+
+    # Traverse through the keys to access the nested value
+    for key in keys:
+        json_data = json_data[key]
+
+    # Save the final value in the context using the last part of the key
+    setattr(context, keys[-1], json_data)
