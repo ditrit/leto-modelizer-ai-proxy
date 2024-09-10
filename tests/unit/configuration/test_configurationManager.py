@@ -71,9 +71,16 @@ class TestConfigurationManager(TestCase):
                     "models": ["mistral"],
                     "defaultModel": "mistral",
                     "modelFiles": {
-                        "default": "default-mistral-modelfile",
-                        "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile",
-                        "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile",
+                        "generate": {
+                            "default": "default-mistral-modelfile_generate",
+                            "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
+                            "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate",
+                        },
+                        "message": {
+                            "default": "default-mistral-modelfile_message",
+                            "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
+                            "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message",
+                        },
                     },
                 }
             },
