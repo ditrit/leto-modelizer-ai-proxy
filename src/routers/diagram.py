@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("")
 def generate(diagram: Diagram):
     """
     Generates code based on the provided `diagram` object.
@@ -28,4 +28,5 @@ def generate(diagram: Diagram):
         requests.exceptions.RequestException: If there is an error while making the API request.
     """
 
+    print(f"Receive POST /api/diagram request with body: {diagram.dict()}")
     return Factory.get_handler(diagram.plugin_name).generate(diagram)
