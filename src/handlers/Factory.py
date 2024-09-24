@@ -1,5 +1,6 @@
 from src.configuration.configurationManager import ConfigurationManager
 from src.handlers.Ollama.OllamaHandler import OllamaHandler
+from src.handlers.Gemini.GeminiHandler import GeminiHandler
 
 
 class Factory:
@@ -26,6 +27,8 @@ class Factory:
 
         if plugin_name == "ollama":
             return OllamaHandler()
+        if plugin_name == "gemini":
+            return GeminiHandler()
 
     @staticmethod
     def initialize_models():
