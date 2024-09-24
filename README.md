@@ -11,7 +11,9 @@ Built on top of Python's robust web framework, the Leto-Modelizer Proxy API offe
 
 ## Setup
 
-Currently this project use Ollama in order to generate code.
+Currently this project use Ollama or Gemini in order to generate code.
+
+### Installing Ollama
 So you need to install Ollama on your local: 
 
 ```sh 
@@ -36,6 +38,11 @@ Then you can just ask it a question !
 
 **NOTE**: You may need to install NVIDIA Container Toolkit to run Ollama.
 cf: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+### Gemini API
+
+For Gemini, you need to create an account and get an API key, on this website: https://ai.google.dev/
+Then you just need to add it in the `configuration.json` file, in the `ai-models` section.
 
 
 ## How to launch the API using uvicorn
@@ -96,6 +103,7 @@ Currently the configuration has the following settings:
 |--------------------|-------------------------------------------------------------------------------------------------|
 | pluginPreferences  | A dictionary containing the plugin preferences, which are the AI models to use for what plugin. |
 | ollama             | A dictionary containing the ollama configuration (cf: next section).                            |
+| Gemini             | A dictionary containing the Gemini configuration (cf: next section).                            |
 
 Here is an example of the `configuration.json` file:
 
@@ -108,7 +116,35 @@ Here is an example of the `configuration.json` file:
     {
         "base_url": "http://localhost:11434/api",
         "models": ["mistral"],
-        "defaultModel": "mistral"
+        "defaultModel": "mistral",
+        "modelFiles": {
+            "generate": {
+                "default": "default-mistral-modelfile_generate",
+                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
+                "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate"
+            },
+            "message": {
+                "default": "default-mistral-modelfile_message",
+                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
+                "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message"
+            }
+        }
+    },
+    "gemini": {
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+        "key": "YOUR-KEY",
+        "system_instruction": {
+            "generate": {
+                "default": "default-generate.json",
+                "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                "@ditrit/githubator-plugin": "default-githubactions.json"
+            },
+            "message": {
+                "default": "default-message.json",
+                "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                "@ditrit/githubator-plugin": "default-githubactions.json"
+            }
+        }
     }
 }
 ```
@@ -121,17 +157,32 @@ Moreover, the AI precised for each plugin in the `pluginPreferences` key must ex
 Ollama can be found here: https://github.com/ollama/ollama
 Ollama has the following settings:
 
-| Setting       | Description                     |
-|---------------|---------------------------------|
-| base_url      | The base URL of the Ollama API. |
-| models        | A list of models to use.        |
-| defaultModel | The default model to use.        |
+| Setting       | Description                                                                                            |
+|---------------|--------------------------------------------------------------------------------------------------------|
+| base_url      | The base URL of the Ollama API.                                                                        |
+| models        | A list of models to use.                                                                               |
+| defaultModel  | The default model to use.                                                                              |
+| modelFiles    | The Ollama model files to use. They are seperate by purpose, one for generate and one for message mode |
 
 Currently only the default model is used. But later, we will be able to handle more smoothly the rest of the models to use, depending on the usage.
 
+### Gemini
+
+Gemini can be found here: https://github.com/google-gemini/
+**Don't forget to set the `key` in the `configuration.json` by creating an account and getting an API key.**
+Gemini has the following settings:
+
+| Setting            | Description                                                                                              |
+|--------------------|----------------------------------------------------------------------------------------------------------|
+| base_url           | The base URL of the Gemini API.                                                                          |
+| key                | The API key to use.                                                                                      |
+| system_instruction | Json file used to generate the response according to the methodology we need. (same as Ollama modelfiles)|
+
+**NOTE**: Currently Gemini does not handle the message mode (conversation with a context) correctly due to the way the API works with context.
+
 ### Other AI models
 
-Currently the API only supports the Ollama.
+Currently the API only supports the Ollama and Gemini.
 In the near future, we will be able to have more AI models.
 Moreover, you can add your own AI models, to do so see [here](CONTRIBUTING.md#how-to-add-a-new-ai). 
 
