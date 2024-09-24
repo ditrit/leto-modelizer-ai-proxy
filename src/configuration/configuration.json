@@ -19,6 +19,22 @@
                     "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message"
                 }
             }
+        },
+        "gemini": {
+            "base_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+            "key": "YOUR-KEY",
+            "system_instruction": {
+                "generate": {
+                    "default": "default-generate.json",
+                    "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                    "@ditrit/githubator-plugin": "default-githubactions.json"
+                },
+                "message": {
+                    "default": "default-message.json",
+                    "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                    "@ditrit/githubator-plugin": "default-githubactions.json"
+                }
+            }
         }
     }
 }
