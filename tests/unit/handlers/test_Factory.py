@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from src.handlers.Factory import Factory
 from src.handlers.Ollama.OllamaHandler import OllamaHandler
+from src.handlers.Gemini.GeminiHandler import GeminiHandler
 
 
 @pytest.mark.parametrize(
@@ -22,6 +23,31 @@ from src.handlers.Ollama.OllamaHandler import OllamaHandler
                 },
             },
             OllamaHandler,
+        ),
+        (
+            "default",
+            {
+                "pluginPreferences": {"default": "gemini"},
+                "ai-models": {
+                    "gemini": {
+                        "base_url": "http://localhost:11434/api",
+                        "key": "key",
+                        "system_instruction": {
+                            "generate": {
+                                "default": "default-generate.json",
+                                "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                                "@ditrit/githubator-plugin": "default-githubactions.json",
+                            },
+                            "message": {
+                                "default": "default-message.json",
+                                "@ditrit/kubernator-plugin": "default-kubernetes.json",
+                                "@ditrit/githubator-plugin": "default-githubactions.json",
+                            },
+                        },
+                    },
+                },
+            },
+            GeminiHandler,
         ),
     ],
 )
