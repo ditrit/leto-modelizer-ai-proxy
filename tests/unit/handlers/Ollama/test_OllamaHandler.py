@@ -45,21 +45,33 @@ class TestOllamaHandler(TestCase):
 
     def test_initialize(self):
 
-        with patch("src.handlers.Ollama.OllamaHandler.requests.post") as mock_post:
-            mock_post.return_value = requests.Response()
-            mock_post.return_value.status_code = 200
-            mock_post.return_value._content = b'{"response": "success"}'
-            mock_post.return_value.encoding = "utf-8"
-
-            responses = self.handler.initialize()
-            assert responses == [
-                {"response": "success"},
-                {"response": "success"},
-                {"response": "success"},
-                {"response": "success"},
-                {"response": "success"},
-                {"response": "success"},
+        with patch("builtins.open") as mock_open:
+            mock_modelfiles_content = [
+                "modelfile1",
+                "modelfile2",
+                "modelfile3",
+                "modelfile4",
+                "modelfile5",
+                "modelfile6",
             ]
+            mock_open.return_value.__enter__.return_value.read.side_effect = (
+                mock_modelfiles_content
+            )
+            with patch("src.handlers.Ollama.OllamaHandler.requests.post") as mock_post:
+                mock_post.return_value = requests.Response()
+                mock_post.return_value.status_code = 200
+                mock_post.return_value._content = b'{"response": "success"}'
+                mock_post.return_value.encoding = "utf-8"
+
+                responses = self.handler.initialize()
+                assert responses == [
+                    {"response": "success"},
+                    {"response": "success"},
+                    {"response": "success"},
+                    {"response": "success"},
+                    {"response": "success"},
+                    {"response": "success"},
+                ]
 
     def test_generate(self):
         diagram = Diagram(pluginName="default", description="Generate code")

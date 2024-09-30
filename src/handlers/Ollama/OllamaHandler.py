@@ -40,14 +40,18 @@ class OllamaHandler(BaseHandler):
                     print(
                         f"Loading Ollama model file for {plugin_name}: {model_file_category}/{model_file} ({model_file_category})"
                     )
+                    filepath = os.path.join(
+                        os.path.dirname(os.path.abspath(__file__)),
+                        "ModelFiles",
+                        model_file_category,
+                        model_file,
+                    )
+                    with open(filepath, "r") as file:
+                        content = file.read()
+
                     body = {
                         "name": model_file,
-                        "path": os.path.join(
-                            os.path.dirname(os.path.abspath(__file__)),
-                            "ModelFiles",
-                            model_file_category,
-                            model_file,
-                        ),
+                        "modelfile": content,
                         "stream": False,
                     }
 
@@ -116,7 +120,6 @@ class OllamaHandler(BaseHandler):
             f"{self.configuration['base_url']}/generate",
             json=body,
         )
-
         json_code = self.__parse_response(response.json()["response"])
         if json_code is not None:
             return JSONResponse(content=json_code)
