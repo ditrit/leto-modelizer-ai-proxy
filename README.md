@@ -45,15 +45,18 @@ For Gemini, you need to create an account and get an API key, on this website: h
 Then you just need to add it in the `configuration.json` file, in the `ai-models` section.
 
 
-## How to launch the API using uvicorn
+## How to launch the API using hypercorn
 
 First install pipenv and create a virtual environment with the needed packages:
 
 * pipenv
 
     On modern Linux distributions, you can install pipenv using the following command:
+
         * ``` sudo apt install pipenv ```
+
         * ``` sudo apt install pipx && pipx install pipenv && pipx ensurepath ```
+
     **NOTE**: After PEP668, all python packages should be installed in a virtual environment (recommanded to use pipx) or using the debian package manager.
 
     Create virtual environment and install dependencies from your repo: ``` pipenv install ```
@@ -64,7 +67,7 @@ First install pipenv and create a virtual environment with the needed packages:
 
     To deactivate your virtual environment: ``` deactivate ```
 
-Then launch the API using uvicorn (from the root folder):
+Then launch the API using hypercorn (from the root folder):
 
 ```sh
 hypercorn src.main:app --reload --bind 127.0.0.1:8585
