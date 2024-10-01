@@ -9,4 +9,5 @@ COPY ./src /code/src
 RUN pip3 install pipenv && pipenv install --deploy --system --ignore-pipfile
 
 EXPOSE 8585
-CMD ["hypercorn", "src.main:app", "--reload", "--bind", "127.0.0.1:8585"]
+CMD ["hypercorn", "src.main:app", "--reload", "--bind", "0.0.0.0:8585"]
+
