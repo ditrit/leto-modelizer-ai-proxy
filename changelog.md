@@ -10,10 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - Setup the project
  - Create Ollama handler in order to generate code through the /api/diagram route
- - Handle Modelfiles for Ollama
+ - Handle Modelfiles for Ollama (terraform, kubernetes and github actions)
  - Migrate to python 3.12
  - Migrate from uvicorn to hypercorn
  - Add new Ollama model files (for generate and message)
  - Handle new /api/message endpoint for Ollama, that send messages to the Ollama AI and get a response with the associated context
  - Added new Gemini model files (for generate and message). Conversation with a context is not supported.
+ - Added Docker compose (works only with nvidia gpu)
  
