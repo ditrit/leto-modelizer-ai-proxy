@@ -13,88 +13,6 @@ Built on top of Python's robust web framework, the Leto-Modelizer Proxy API offe
 
 Currently this project use Ollama or Gemini in order to generate code.
 
-### Installing Ollama
-So you need to install Ollama on your local: 
-
-```sh 
-curl -fsSL https://ollama.com/install.sh | sh 
-```
-
-Then you have to pull a model from Ollama:
-
-```sh 
-ollama pull mistral 
-```
-
-### Testing Ollama
-
-In order to test Ollama, you can run your model using the following command:
-
-```sh
-ollama run mistral
-```
-
-Then you can just ask it a question !
-
-**NOTE**: You may need to install NVIDIA Container Toolkit to run Ollama.
-cf: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-
-### Gemini API
-
-For Gemini, you need to create an account and get an API key, on this website: https://ai.google.dev/
-Then you just need to add it in the `configuration.json` file, in the `ai-models` section.
-
-
-## How to launch the API using hypercorn
-
-First install pipenv and create a virtual environment with the needed packages:
-
-* pipenv
-
-    On modern Linux distributions, you can install pipenv using the following command:
-
-        * ``` sudo apt install pipenv ```
-
-        * ``` sudo apt install pipx && pipx install pipenv && pipx ensurepath ```
-
-    **NOTE**: After PEP668, all python packages should be installed in a virtual environment (recommanded to use pipx) or using the debian package manager.
-
-    Create virtual environment and install dependencies from your repo: ``` pipenv install ```
-
-    Install dev dependencies: ``` pipenv install --dev ```
-
-    Activate virtual environment: ``` pipenv shell ```
-
-    To deactivate your virtual environment: ``` deactivate ```
-
-Then launch the API using hypercorn (from the root folder):
-
-```sh
-hypercorn src.main:app --reload --bind 127.0.0.1:8585
-```
-
-Once it is running, you can request it on this url: ```http://localhost:8585/```
-
-And the Swagger UI is available on this url: ```http://localhost:8585/docs```
-
-## How to launch the API using docker
-
-You need to run the following commands to launch the API.
-
-First build the docker image using the following command:
-
-```sh
-docker build -t leto-modelizer-ai-proxy .
-```
-
-Then run the image:
-
-```sh
-docker run -p 8585:8585 --net=host leto-modelizer-ai-proxy
-```
-
-Once your docker is running, you can request it on this url: ```http://localhost:8585/```
-
 ## Configuration
 
 To configure the API, you need to edit the `configuration/configuration.json` file (default location).
@@ -187,8 +105,123 @@ Gemini has the following settings:
 
 Currently the API only supports the Ollama and Gemini.
 In the near future, we will be able to have more AI models.
-Moreover, you can add your own AI models, to do so see [here](CONTRIBUTING.md#how-to-add-a-new-ai). 
+Moreover, you can add your own AI models, to do so see [here](CONTRIBUTING.md#how-to-add-a-new-ai).
 
+
+## Installing Ollama (if you want to use Ollama locally)
+So you need to install Ollama on your local: 
+
+```sh 
+curl -fsSL https://ollama.com/install.sh | sh 
+```
+
+Then you have to pull a model from Ollama:
+
+```sh 
+ollama pull mistral 
+```
+
+### Testing Ollama
+
+In order to test Ollama, you can run your model using the following command:
+
+```sh
+ollama run mistral
+```
+
+Then you can just ask it a question !
+
+**NOTE**: You may need to install NVIDIA Container Toolkit to run Ollama.
+cf: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+### Gemini API
+
+For Gemini, you need to create an account and get an API key, on this website: https://ai.google.dev/
+Then you just need to add it in the `configuration.json` file, in the `ai-models` section.
+
+
+## How to launch the API using hypercorn
+
+First install pipenv and create a virtual environment with the needed packages:
+
+* pipenv
+
+    On modern Linux distributions, you can install pipenv using the following command:
+
+        * ``` sudo apt install pipenv ```
+
+        * ``` sudo apt install pipx && pipx install pipenv && pipx ensurepath ```
+
+    **NOTE**: After PEP668, all python packages should be installed in a virtual environment (recommanded to use pipx) or using the debian package manager.
+
+    Create virtual environment and install dependencies from your repo: ``` pipenv install ```
+
+    Install dev dependencies: ``` pipenv install --dev ```
+
+    Activate virtual environment: ``` pipenv shell ```
+
+    To deactivate your virtual environment: ``` deactivate ```
+
+Then launch the API using hypercorn (from the root folder):
+
+```sh
+hypercorn src.main:app --reload --bind 127.0.0.1:8585
+```
+
+Once it is running, you can request it on this url: ```http://localhost:8585/```
+
+And the Swagger UI is available on this url: ```http://localhost:8585/docs```
+
+## How to launch the API using docker 
+
+### With NVIDIA GPU
+
+You need to run the following commands to launch the API.
+
+First install NVIDIA Container Toolkit:
+```
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+
+# Configure NVIDIA Container Toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+
+# Test GPU integration
+docker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi
+```
+
+then build the docker image using the following command:
+
+```sh
+docker build -t leto-modelizer-ai-proxy .
+```
+
+Then run the image:
+
+```sh
+docker compose up -f docker-compose-nvidia.yaml
+```
+
+### Without NVIDIA GPU
+
+Build the docker image using the following command:
+
+```sh
+docker build -t leto-modelizer-ai-proxy .
+```
+
+Then run the image:
+
+```sh
+docker compose up -f docker-compose.yaml
+```
+
+Once your docker is running, you can request it on this url: ```http://localhost:8585/```
 
 ## Endpoint
 
@@ -199,3 +232,4 @@ Currently the API only supports these enpoints:
 | GET     | /             | Returning a welcome message                                             |
 | POST    | /api/diagram  | Generating diagram code                                                 |
 | POST    | /api/message  | Send a message to the AI and get a response with the associated context |
+
