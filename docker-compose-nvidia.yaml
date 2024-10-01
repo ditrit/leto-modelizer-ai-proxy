@@ -1,0 +1,37 @@
+volumes:
+  ollama:
+
+networks:
+  ollama-docker:
+
+services:
+  ollama:
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    tty: true
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    networks:
+      - ollama-docker
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  leto-modelizer-ai-proxy:
+    build: .
+    ports:
+      - "8585:8585"
+    volumes:
+      - ./src:/code/src/
+    depends_on:
+      - ollama
+    container_name: leto-modelizer-ai-proxy
+    networks:
+      - ollama-docker
+
