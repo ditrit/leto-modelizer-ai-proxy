@@ -11,12 +11,14 @@
                 "generate": {
                     "default": "default-mistral-modelfile_generate",
                     "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
-                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate"
+                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate",
+                    "@ditrit/terrator-plugin": "default-terraform-mistral-modelfile_generate"
                 },
                 "message": {
                     "default": "default-mistral-modelfile_message",
                     "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
-                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message"
+                    "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message",
+                    "@ditrit/terrator-plugin": "default-terraform-mistral-modelfile_message"
                 }
             }
         },
