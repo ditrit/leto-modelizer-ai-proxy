@@ -1,7 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
 from src.routers import diagram, message
-from src.handlers.Factory import Factory
 
 app = FastAPI()
 
@@ -12,18 +11,6 @@ api_router.include_router(diagram.router)
 api_router.include_router(message.router)
 
 app.include_router(api_router)
-
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    This function is called when the API starts.
-
-    It initializes the API by calling the `initialize` method of the `Factory` class
-    which initializes all the models defined in the configuration file.
-    """
-    print("Initializing the API...")
-    Factory.initialize_models()
 
 
 @app.get("/")
