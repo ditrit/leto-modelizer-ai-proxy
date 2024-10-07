@@ -162,9 +162,11 @@ First install pipenv and create a virtual environment with the needed packages:
 
     To deactivate your virtual environment: ``` deactivate ```
 
-Then launch the API using hypercorn (from the root folder):
-
+Then launch the API using hypercorn (from the root folder and your virtual environment is activated):
+The initialize script initializes everything the handlers needs in order to work (for instance the Ollama handler needs to be initialized with the model files).
+This script can be launched anytime. Even after the API is running.
 ```sh
+python3 initialize.py
 hypercorn src.main:app --reload --bind 127.0.0.1:8585
 ```
 
@@ -221,7 +223,14 @@ Then run the image:
 docker compose up -f docker-compose.yaml
 ```
 
-Once your docker is running, you can request it on this url: ```http://localhost:8585/```
+The initialize script initializes everything the handlers needs in order to work (for instance the Ollama handler needs to be initialized with the model files).
+This script can be launched anytime. Even after the API is running.
+```sh
+python3 initialize.py
+```
+Once your docker is running and initialized, you can request it on this url: ```http://localhost:8585/```
+
+**NOTE:** You do not need to launch the initialize script everytime you launch the API with docker, once is enough since it target the AI (i.e model files for Ollama).
 
 ## Endpoint
 
