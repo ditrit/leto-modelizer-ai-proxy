@@ -26,4 +26,4 @@ async def root() -> dict:
     """
     This endpoint is the entrypoint of the API and returns a diagnostic message.
     """
-    return {"status": "ok", "version": "0.0.0"}
+    return {"status": "ok", "version": "1.0.0"}
