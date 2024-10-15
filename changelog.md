@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## [Unreleased]
+## [1.0.0] - 2024/10/15
 
 ### Added
 
@@ -20,3 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Added Docker compose (works only with nvidia gpu)
  - The initialize script is now separated from the main script. It can be launched from the root folder, anytime.
  - Add health endpoint
+
+[1.0.0]: https://github.com/ditrit/leto-modelizer-ai-proxy/blob/main/changelog.md#1.0.0
+
