@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
  - Setup the project
  - Create Ollama handler in order to generate code through the /api/diagram route
  - Handle Modelfiles for Ollama (terraform, kubernetes and github actions)
@@ -18,4 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Added new Gemini model files (for generate and message). Conversation with a context is not supported.
  - Added Docker compose (works only with nvidia gpu)
  - The initialize script is now separated from the main script. It can be launched from the root folder, anytime.
- 
+ - Add health endpoint
