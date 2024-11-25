@@ -1,5 +1,3 @@
-import requests
-
 from fastapi import APIRouter
 
 from src.models.Diagram import Diagram
