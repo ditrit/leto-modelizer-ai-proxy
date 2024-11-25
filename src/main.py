@@ -1,12 +1,13 @@
 from fastapi import APIRouter, FastAPI
 
-from src.routers import diagram, message
+from src.routers import diagram, message, configuration
 
 app = FastAPI()
 
 # Create a parent router with the prefix "/api"
 api_router = APIRouter(prefix="/api")
 
+api_router.include_router(configuration.router)
 api_router.include_router(diagram.router)
 api_router.include_router(message.router)
 
