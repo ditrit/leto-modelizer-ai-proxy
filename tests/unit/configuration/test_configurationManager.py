@@ -1,8 +1,43 @@
-import json
 import pytest
-from unittest import TestCase
-from unittest.mock import patch
+import json
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Hash import SHA256
+from fastapi import HTTPException
+from unittest import TestCase, IsolatedAsyncioTestCase
 from src.configuration.configurationManager import ConfigurationManager
+
+
+def encrypt_test_function(key: str, plain_text: str) -> bytes:
+    """
+    Encrypts the given plaintext using AES in GCM mode with the given key.
+    Creating this method here for testing purposes.
+    Its taken from leto-modelizer-api just for testing the decryption, so not used in leto-modelizer-ai-proxy
+    :param key: The key to use for encryption.
+    :param plain_text: The plaintext to encrypt.
+    :return: The encrypted data as bytes.
+    :raises Exception: If encryption fails.
+    """
+    try:
+        # Convert plaintext to bytes
+        clean = plain_text.encode("utf-8")
+        # Generate IV
+        IV_SIZE = 12  # Standard size for AES GCM IV
+        iv = get_random_bytes(IV_SIZE)
+        # Hash the ke
+        # y using SHA-256
+        KEY_SIZE = 16
+        digest = SHA256.new()
+        digest.update(key.encode("utf-8"))
+        key_bytes = digest.digest()[:KEY_SIZE]
+        # Create cipher and encrypt
+        cipher = AES.new(key_bytes, AES.MODE_GCM, nonce=iv)
+        encrypted, tag = cipher.encrypt_and_digest(clean)
+        # Combine IV, encrypted text, and tag
+        encrypted_iv_and_text = iv + encrypted + tag
+        return encrypted_iv_and_text
+    except Exception as e:
+        raise Exception("Failed to encrypt: " + str(e))
 
 
 class TestConfigurationManager(TestCase):
@@ -11,91 +46,71 @@ class TestConfigurationManager(TestCase):
         ConfigurationManager().reset()
 
     def test_configuration_singleton(self):
+        """
+        Tests the singleton pattern implementation of the ConfigurationManager class.
+
+        This test verifies that only one instance of ConfigurationManager is created
+        and used, even when multiple instances are requested.
+
+        Asserts:
+            - Both instances retrieved are the same instance.
+        """
         config_manager1 = ConfigurationManager()
         config_manager2 = ConfigurationManager()
         self.assertIs(config_manager1, config_manager2)
 
-    @patch("os.environ.get")
-    @patch("builtins.open")
-    def test_configuration_validation_error(self, mock_open, mock_environ_get):
-        # Mock the return value of os.environ.get
-        mock_environ_get.return_value = "path/to/config.json"
+    def test_decryption(self):
+        """
+        Tests the decryption functionality of the ConfigurationManager class.
 
-        # Mock the return value of open
-        mock_file = mock_open.return_value.__enter__.return_value
-        mock_file.read.return_value = json.dumps(
-            {
-                "pluginPreferences": {"default": "fakeAI"},
-                "ai-models": {"ollama": {"url": "http://localhost"}},
-            }
-        )
+        This test encrypts a sample JSON string using a predefined key and
+        verifies that the decrypt method can successfully decrypt it back to
+        the original string. It also checks that an exception is raised when
+        attempting to decrypt with an incorrect key.
 
-        with pytest.raises(ValueError, match="Invalid AI: fakeAI"):
-            ConfigurationManager().get_configuration()
+        Asserts:
+            - The decrypted text matches the original text.
+            - Decryption with a wrong key raises an exception with the message "Failed to decrypt".
+        """
+        key = "123456789"
+        original_config = '{"config1": "my_ai"}'
+        encrypted_config = encrypt_test_function(key, original_config)
 
-    @patch("os.environ.get")
-    @patch("builtins.open")
-    def test_configuration_validation_error_no_default(
-        self, mock_open, mock_environ_get
-    ):
-        # Mock the return value of os.environ.get
-        mock_environ_get.return_value = "path/to/config.json"
+        decrypted_text = ConfigurationManager().decrypt(key, encrypted_config)
+        self.assertEqual(original_config, decrypted_text)
 
-        # Mock the return value of open
-        mock_file = mock_open.return_value.__enter__.return_value
-        mock_file.read.return_value = json.dumps(
-            {
-                "pluginPreferences": {"somePlugin": "ollama"},
-                "ai-models": {"ollama": {"base_url": "http://localhost"}},
-            }
-        )
+        with pytest.raises(Exception, match="Failed to decrypt"):
+            ConfigurationManager().decrypt("wrong_key", encrypted_config)
 
+
+class TestAsyncConfigurationManager(IsolatedAsyncioTestCase):
+
+    async def test_configuration_get_set_configuration(self):
+        """
+        Tests the get and set configuration methods of the ConfigurationManager class.
+
+        This test verifies that an exception is raised when attempting to get the configuration when it is not set.
+        It also checks that the configuration can be successfully set using the set_configuration method and
+        then retrieved using the get_configuration method.
+
+        Asserts:
+            - Getting the configuration when it is not set raises an exception.
+            - Setting the configuration and then getting it results in the original configuration.
+        """
+        config_manager = ConfigurationManager()
+
+        ## No configuration
         with pytest.raises(
-            ValueError, match="Invalid plugin preferences: 'default' not found"
+            HTTPException,
+            match="The required configuration is not set. Please set up the configuration and try again.",
         ):
-            ConfigurationManager().get_configuration()
+            config_manager.get_configuration()
 
-    @patch("os.environ.get")
-    @patch("builtins.open")
-    def test_configuration_success(self, mock_open, mock_environ_get):
-        # Mock the return value of os.environ.get
-        mock_environ_get.return_value = "path/to/config.json"
+        ## With configuration
+        key = "123456789"
+        original_config = '{"config1": "my_ai"}'
+        encrypted_config = encrypt_test_function(key, original_config)
 
-        # Mock the return value of open
-        mock_file = mock_open.return_value.__enter__.return_value
-        mocked_config = {
-            "pluginPreferences": {"default": "ollama"},
-            "ai-models": {
-                "ollama": {
-                    "base_url": "http://localhost",
-                    "models": ["mistral"],
-                    "defaultModel": "mistral",
-                    "modelFiles": {
-                        "generate": {
-                            "default": "default-mistral-modelfile_generate",
-                            "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
-                            "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate",
-                        },
-                        "message": {
-                            "default": "default-mistral-modelfile_message",
-                            "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
-                            "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message",
-                        },
-                    },
-                }
-            },
-        }
-
-        expected_config = json.dumps(mocked_config)
-
-        mock_file.read.return_value = expected_config
-
-        config = ConfigurationManager().get_configuration()
-
-        # Assert that the function returns the expected dictionary
-        self.assertEqual(config, json.loads(expected_config))
-        mock_environ_get.assert_called_once_with(
-            "API_CONFIGURATION", "src/configuration/configuration.json"
-        )
-        mock_open.assert_called_once_with("path/to/config.json", "r")
-        mock_file.read.assert_called_once()
+        await config_manager.set_configuration(encrypted_config, key)
+        config = config_manager.get_configuration()
+        self.assertEqual(config, json.loads(original_config))
