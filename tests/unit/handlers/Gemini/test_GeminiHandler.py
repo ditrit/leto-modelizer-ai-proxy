@@ -19,28 +19,22 @@ class TestGeminiHandler(TestCase):
         ) as mock_get_configuration:
 
             mock_get_configuration.return_value = {
-                "pluginPreferences": {"default": "gemini"},
-                "ai-models": {
-                    "gemini": {
-                        "base_url": "https://localhost",
-                        "key": "coucou",
-                        "system_instruction": {
-                            "generate": {
-                                "default": "default-generate.json",
-                                "@ditrit/kubernator-plugin": "default-kubernetes.json",
-                                "@ditrit/githubator-plugin": "default-githubactions.json",
-                            },
-                            "message": {
-                                "default": "default-message.json",
-                                "@ditrit/kubernator-plugin": "default-kubernetes.json",
-                                "@ditrit/githubator-plugin": "default-githubactions.json",
-                            },
+                "gemini": {
+                    "base_url": "https://localhost",
+                    "key": "coucou",
+                    "system_instruction": {
+                        "generate": {
+                            "default": '{"system_instruction":{"parts":{"text": "test"}}}'
                         },
-                    }
-                },
+                        "message": {
+                            "default": '{"system_instruction":{"parts":{"text": "test2"}}}'
+                        },
+                    },
+                }
             }
 
             self.handler = GeminiHandler()
+            self.handler.initialize_configuration()
 
     def test_initialize(self):
         """
