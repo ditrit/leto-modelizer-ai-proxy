@@ -32,9 +32,9 @@ class GeminiHandler(BaseHandler):
 
         Nothing to do here.
         """
-        return True
+        return [{"status": "success"}]
 
-    def __send_reqest_with_system_instructions(
+    def __send_request_with_system_instructions(
         self, plugin_name: str, text: str, instruction: str = "generate"
     ):
         """
@@ -50,18 +50,17 @@ class GeminiHandler(BaseHandler):
         """
 
         body = {}
-
         if plugin_name in self.configuration["system_instruction"][instruction]:
-            instruction_file_name = self.configuration["system_instruction"][
+            instruction_description = self.configuration["system_instruction"][
                 instruction
             ][plugin_name]
-            current_path = os.path.dirname(__file__)
-            path_file = os.path.join(
-                current_path, "SystemInstructions", instruction, instruction_file_name
-            )
-            with open(path_file) as instruction_file:
-                instruction_json = json.load(instruction_file)
-                body.update(instruction_json)
+        else:
+            instruction_description = self.configuration["system_instruction"][
+                instruction
+            ]["default"]
+
+        instruction_description = json.loads(instruction_description)
+        body.update(instruction_description)
 
         body["contents"] = {"parts": {"text": f"{text}"}}
         body["generationConfig"] = {"response_mime_type": "application/json"}
@@ -72,7 +71,7 @@ class GeminiHandler(BaseHandler):
             json=body,
             params=query_params,
         )
-        print(f"---------- Response: {response.json()}")
+
         return response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
     def generate(self, diagram: Diagram):
@@ -89,8 +88,8 @@ class GeminiHandler(BaseHandler):
             KeyError: If the configuration file does not contain the required keys.
             requests.exceptions.RequestException: If there is an error while making the API request.
         """
-        json_code = self.__send_reqest_with_system_instructions(
-            diagram.plugin_name, diagram.description
+        json_code = self.__send_request_with_system_instructions(
+            diagram.plugin_name, diagram.description, "generate"
         )
         try:
             json_code = json.loads(json_code)
@@ -116,9 +115,10 @@ class GeminiHandler(BaseHandler):
         if message.files is not None:
             return JSONResponse(content={"context": "no context"})
 
-        response = self.__send_reqest_with_system_instructions(
+        response = self.__send_request_with_system_instructions(
             message.plugin_name, message.message, "message"
         )
         json_code = {"message": response}
         json_code["context"] = "no context"
+
         return JSONResponse(content=json_code)

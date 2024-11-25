@@ -1,0 +1,67 @@
+[{
+    "handler": "gemini",
+    "key": "base_url",
+    "type": "text",
+    "values": [],
+    "defaultValue": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+    "label": "Gemini server url",
+    "title": "Define the url of gemini server",
+    "description": "",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "gemini",
+    "key": "key",
+    "type": "text",
+    "values": [],
+    "defaultValue": "",
+    "label": "Secret API key of gemini",
+    "title": "Define the secret API key of gemini.",
+    "description": "Please use secret to store secret key.",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "gemini",
+    "key": "system_instruction.generate.default",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to generate files for plugins.",
+    "title": "Define the model instructions for gemini to generate plugin files.",
+    "description": "",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "gemini",
+    "key": "system_instruction.generate.{{ plugin }}",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Model files to generate files for {{ plugin }} plugin.",
+    "title": "Define the model instructions for gemini to generate {{ plugin }} files.",
+    "description": "The system description should be respecting the format of gemini's system description (json format).",
+    "pluginDependent": true,
+    "required": false
+  }, {
+    "handler": "gemini",
+    "key": "system_instruction.message.default",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to discuss about plugin.",
+    "title": "Define the model instructions for gemini to discuss about plugin.",
+    "description": "The system description should be respecting the format of gemini's system description (json format).",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "gemini",
+    "key": "system_instruction.message.{{ plugin }}",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to discuss about {{ plugin }} plugin.",
+    "title": "Define the model instructions for gemini to discuss about {{ plugin }} plugin.",
+    "description": "The system description should be respecting the format of gemini's system description (json format).",
+    "pluginDependent": true,
+    "required": false
+  }]
