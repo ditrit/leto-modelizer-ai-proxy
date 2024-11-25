@@ -1,4 +1,3 @@
-import os
 import requests
 import json
 import re
@@ -16,6 +15,8 @@ class OllamaHandler(BaseHandler):
     Ollama handler class.
 
     This class is used to generate code using the Ollama API.
+
+    The handler must be initialized with the `configuration` from the user configuration, using the `initialize_configuration` method.
     """
 
     def __init__(self):
@@ -36,22 +37,14 @@ class OllamaHandler(BaseHandler):
             for model_file_category, model_files in self.configuration[
                 "modelFiles"
             ].items():
-                for plugin_name, model_file in model_files.items():
+                for plugin_name, model_file_content in model_files.items():
                     print(
-                        f"Loading Ollama model file for {plugin_name}: {model_file_category}/{model_file} ({model_file_category})"
+                        f"Loading Ollama model file for {plugin_name} ({model_file_category})"
                     )
-                    filepath = os.path.join(
-                        os.path.dirname(os.path.abspath(__file__)),
-                        "ModelFiles",
-                        model_file_category,
-                        model_file,
-                    )
-                    with open(filepath, "r") as file:
-                        content = file.read()
 
                     body = {
-                        "name": model_file,
-                        "modelfile": content,
+                        "name": f"{plugin_name}_{model_file_category}",
+                        "modelfile": model_file_content,
                         "stream": False,
                     }
 
@@ -74,6 +67,10 @@ class OllamaHandler(BaseHandler):
         Returns:
             str: The extracted JSON data if successfully parsed, otherwise None.
         """
+        allow_raw_results = (
+            True if self.configuration.get("allowRawResults") == "true" else False
+        )
+
         json_match = re.search(
             r"```(?:\w+)?\s*([\s\S]+?)```",  # NOSONAR: Sonar do not want the + in the regexp, but it is required
             response_text,
@@ -84,9 +81,9 @@ class OllamaHandler(BaseHandler):
             try:
                 return json.loads(json_data)
             except json.JSONDecodeError:
-                return None
+                return json_match if allow_raw_results else None
         else:
-            return None
+            return response_text if allow_raw_results else None
 
     def generate(self, diagram: Diagram):
         """
@@ -106,9 +103,9 @@ class OllamaHandler(BaseHandler):
         if "modelFiles" not in self.configuration:
             model = self.configuration["defaultModel"]
         elif diagram.plugin_name in self.configuration["modelFiles"]["generate"]:
-            model = self.configuration["modelFiles"]["generate"][diagram.plugin_name]
+            model = f"{diagram.plugin_name}_generate"
         else:
-            model = self.configuration["modelFiles"]["generate"]["default"]
+            model = "default_generate"
 
         body = {
             "model": model,
@@ -120,6 +117,7 @@ class OllamaHandler(BaseHandler):
             f"{self.configuration['base_url']}/generate",
             json=body,
         )
+
         json_code = self.__parse_response(response.json()["response"])
         if json_code is not None:
             return JSONResponse(content=json_code)
@@ -133,9 +131,9 @@ class OllamaHandler(BaseHandler):
         if "modelFiles" not in self.configuration:
             model = self.configuration["defaultModel"]
         elif message.plugin_name in self.configuration["modelFiles"]["message"]:
-            model = self.configuration["modelFiles"]["message"][message.plugin_name]
+            model = f"{message.plugin_name}_message"
         else:
-            model = self.configuration["modelFiles"]["message"]["default"]
+            model = "default_message"
 
         # If there are files, add them to the prompt in order to
         # provide more context to the model
@@ -157,7 +155,10 @@ class OllamaHandler(BaseHandler):
                 json=body,
             )
 
-            message.context = str(response.json()["context"])
+            if "context" in response.json():
+                message.context = str(response.json()["context"])
+            else:
+                message.context = str([])
 
             # If no message was provided, return only the context
             if message.message is None:

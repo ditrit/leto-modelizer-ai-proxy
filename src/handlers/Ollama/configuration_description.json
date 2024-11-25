@@ -1,0 +1,78 @@
+[{
+    "handler": "ollama",
+    "key": "base_url",
+    "type": "text",
+    "values": [],
+    "defaultValue": "http://localhost:11434/api",
+    "label": "Ollama server url",
+    "title": "Define the url of ollama server",
+    "description": "",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "ollama",
+    "key": "defaultModel",
+    "type": "text",
+    "values": [],
+    "defaultValue": "mistral",
+    "label": "Ollama model's name",
+    "title": "Define the default ollama model to use.",
+    "description": "",
+    "pluginDependent": false,
+    "required": true
+  },{
+    "handler": "ollama",
+    "key": "allowRawResults",
+    "type": "checkbox",
+    "values": [],
+    "defaultValue": false,
+    "label": "Ollama allow raw results",
+    "title": "Define if Ollama can return raw results.",
+    "description": "If activated, Ollama can return raw results. But this is not recommended, because Leto can't parse them.",
+    "pluginDependent": false,
+    "required": false
+  }, {
+    "handler": "ollama",
+    "key": "modelFiles.generate.default",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to generate files for plugins.",
+    "title": "Define the model instructions for ollama to generate plugin files.",
+    "description": "The model file should be respecting the format of ollama's model files.",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "ollama",
+    "key": "modelFiles.generate.{{ plugin }}",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Model files to generate files for {{ plugin }} plugin.",
+    "title": "Define the model instructions for ollama to generate {{ plugin }} files.",
+    "description": "The model file should be respecting the format of ollama's model files.",
+    "pluginDependent": true,
+    "required": false
+  }, {
+    "handler": "ollama",
+    "key": "modelFiles.message.default",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to discuss about plugin.",
+    "title": "Define the model instructions for ollama to discuss about plugin.",
+    "description": "",
+    "pluginDependent": false,
+    "required": true
+  }, {
+    "handler": "ollama",
+    "key": "modelFiles.message.{{ plugin }}",
+    "type": "textarea",
+    "values": [],
+    "defaultValue": "",
+    "label": "Default Model files to discuss about {{ plugin }} plugin.",
+    "title": "Define the model instructions for ollama to discuss about {{ plugin }} plugin.",
+    "description": "",
+    "pluginDependent": true,
+    "required": false
+  }]

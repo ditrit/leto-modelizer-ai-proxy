@@ -19,29 +19,26 @@ class TestOllamaHandler(TestCase):
         ) as mock_get_configuration:
 
             mock_get_configuration.return_value = {
-                "pluginPreferences": {"default": "ollama"},
-                "ai-models": {
-                    "ollama": {
-                        "base_url": "http://localhost",
-                        "models": ["mistral"],
-                        "defaultModel": "mistral",
-                        "modelFiles": {
-                            "generate": {
-                                "default": "default-mistral-modelfile_generate",
-                                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_generate",
-                                "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_generate",
-                            },
-                            "message": {
-                                "default": "default-mistral-modelfile_message",
-                                "@ditrit/kubernator-plugin": "default-kubernetes-mistral-modelfile_message",
-                                "@ditrit/githubator-plugin": "default-githubactions-mistral-modelfile_message",
-                            },
+                "ollama": {
+                    "base_url": "http://localhost",
+                    "defaultModel": "mistral",
+                    "modelFiles": {
+                        "generate": {
+                            "default": 'FROM mistral SYSTEM """ test generate """',
+                            "@ditrit/kubernator-plugin": 'FROM mistral SYSTEM """ test 2 generate """',
+                            "@ditrit/githubator-plugin": 'FROM mistral SYSTEM """ test 3 generate """',
                         },
-                    }
-                },
+                        "message": {
+                            "default": 'FROM mistral SYSTEM """ test message """',
+                            "@ditrit/kubernator-plugin": 'FROM mistral SYSTEM """ test 2 message """',
+                            "@ditrit/githubator-plugin": 'FROM mistral SYSTEM """ test 3 message """',
+                        },
+                    },
+                }
             }
 
             self.handler = OllamaHandler()
+            self.handler.initialize_configuration()
 
     def test_initialize(self):
 
