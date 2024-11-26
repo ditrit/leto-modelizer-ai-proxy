@@ -13,10 +13,22 @@ Built on top of Python's robust web framework, the Leto-Modelizer Proxy API offe
 
 Currently this project use Ollama or Gemini in order to generate code.
 
+## .env
+
+In order to configure the API, you need to create a `.env` file in the root of the project.
+You can find an example of this file [here](.env.example).
+
+The `.env` file should contain the following variables:
+
+| Variable       | Description                          |
+| -------------- | ------------------------------------ |
+| DECRYPTION_KEY | Key for decrypting the configuration |
+
+
 ## Configuration
 
-To configure the API, you need to edit the `configuration/configuration.json` file (default location).
-Or you can set the environment variables `API_CONFIGURATION` and put the `configuration.json` file in that path`.
+To configure the Proxy API, you need to have the **Leto-Modelizer-Admin running**.
+Then, you have to go in the 'AI settings' section to configure the Proxy API.
 
 Currently the configuration has the following settings:
 
@@ -26,7 +38,7 @@ Currently the configuration has the following settings:
 | ollama             | A dictionary containing the ollama configuration (cf: next section).                            |
 | Gemini             | A dictionary containing the Gemini configuration (cf: next section).                            |
 
-Here is an example of the `configuration.json` file:
+Here is an example of the `configuration`:
 
 ```json
 {
@@ -71,7 +83,8 @@ Here is an example of the `configuration.json` file:
 ```
 
 The mandatory `default` key is used to specify which AI model to use by default for every plugin.
-Moreover, the AI precised for each plugin in the `pluginPreferences` key must exist in the `configuration.json`.
+Moreover, the AI precised for each plugin in the `pluginPreferences` key must exist in the configuration.
+
 
 ### Ollama
 
@@ -90,7 +103,7 @@ Currently only the default model is used. But later, we will be able to handle m
 ### Gemini
 
 Gemini can be found here: https://github.com/google-gemini/
-**Don't forget to set the `key` in the `configuration.json` by creating an account and getting an API key.**
+**Don't forget to set the `key` in the configuration by creating an account and getting an API key.**
 Gemini has the following settings:
 
 | Setting            | Description                                                                                              |
@@ -137,7 +150,7 @@ cf: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/ins
 ### Gemini API
 
 For Gemini, you need to create an account and get an API key, on this website: https://ai.google.dev/
-Then you just need to add it in the `configuration.json` file, in the `ai-models` section.
+Then you just need to add it in the `configuration`, in the `gemini` section of the Leto-Modelizer-Admin.
 
 
 ## How to launch the API using hypercorn
@@ -206,8 +219,9 @@ docker build -t leto-modelizer-ai-proxy .
 Then run the image:
 
 ```sh
-docker compose up -f docker-compose-nvidia.yaml
+docker compose --env-file .env -f docker-compose-nvidia.yaml up
 ```
+**NOTE:** Even using Ollama with docker, you have to pull the model files first (connect to the container then) using the command ```ollama pull mistral```.
 
 ### Without NVIDIA GPU
 
@@ -220,7 +234,7 @@ docker build -t leto-modelizer-ai-proxy .
 Then run the image:
 
 ```sh
-docker compose up -f docker-compose.yaml
+docker compose --env-file .env -f docker-compose.yaml up
 ```
 
 The initialize script initializes everything the handlers needs in order to work (for instance the Ollama handler needs to be initialized with the model files).
@@ -231,6 +245,7 @@ python3 initialize.py
 Once your docker is running and initialized, you can request it on this url: ```http://localhost:8585/```
 
 **NOTE:** You do not need to launch the initialize script everytime you launch the API with docker, once is enough since it target the AI (i.e model files for Ollama).
+**NOTE:** Even using Ollama with docker, you have to pull the model files first (connect to the container then) using the command ```ollama pull mistral```.
 
 ## Endpoint
 
