@@ -4,6 +4,9 @@ import re
 from time import sleep
 from typing import Any, Dict, Optional
 from behave import when
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Hash import SHA256
 
 
 def table_to_json(context) -> Dict[str, Any]:
@@ -98,6 +101,22 @@ def table_to_json(context) -> Dict[str, Any]:
         )
 
     return data
+
+
+def basic_table_to_dict(context):
+    """
+    Converts a Behave table with 'key' and 'value' columns into a dictionary.
+
+    Args:
+        table (behave.model.Table): The Behave table to convert.
+
+    Returns:
+        dict: A dictionary representation of the table.
+    """
+    return {
+        row["key"]: replace_values_in_string(context, row["value"])
+        for row in context.table
+    }
 
 
 def _handle_nested_keys_and_arrays(
@@ -205,3 +224,35 @@ def check_value(resource: dict, field: str, value: str, type: str):
         return str(resource.get(field)) == value
     else:
         return str(resource.get(field)) == value
+
+
+def encrypt_test_function(key: str, plain_text: str) -> bytes:
+    """
+    Encrypts the given plaintext using AES in GCM mode with the given key.
+    Creating this method here for testing purposes.
+    Its taken from leto-modelizer-api just for testing the decryption, so not used in leto-modelizer-ai-proxy
+    :param key: The key to use for encryption.
+    :param plain_text: The plaintext to encrypt.
+    :return: The encrypted data as bytes.
+    :raises Exception: If encryption fails.
+    """
+    try:
+        # Convert plaintext to json to bytes
+        clean = json.dumps(plain_text).encode("utf-8")
+        # Generate IV
+        IV_SIZE = 12  # Standard size for AES GCM IV
+        iv = get_random_bytes(IV_SIZE)
+        # Hash the ke
+        # y using SHA-256
+        KEY_SIZE = 16
+        digest = SHA256.new()
+        digest.update(key.encode("utf-8"))
+        key_bytes = digest.digest()[:KEY_SIZE]
+        # Create cipher and encrypt
+        cipher = AES.new(key_bytes, AES.MODE_GCM, nonce=iv)
+        encrypted, tag = cipher.encrypt_and_digest(clean)
+        # Combine IV, encrypted text, and tag
+        encrypted_iv_and_text = iv + encrypted + tag
+        return encrypted_iv_and_text
+    except Exception as e:
+        raise Exception("Failed to encrypt: " + str(e))
