@@ -34,4 +34,5 @@ services:
     container_name: leto-modelizer-ai-proxy
     networks:
       - ollama-docker
-
+    environment:
+    - DECRYPTION_KEY=${DECRYPTION_KEY:-123456789}
